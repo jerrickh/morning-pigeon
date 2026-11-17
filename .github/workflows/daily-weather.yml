@@ -26,6 +26,7 @@ jobs:
       - name: Generate today's weather audio
         env:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          ELEVENLABS_VOICE_ID: ${{ secrets.ELEVENLABS_VOICE_ID }}
         run: python weather_pigeon.py
 
       - name: Commit updated MP3 to repo
