@@ -54,7 +54,7 @@ def get_last_nights_moon() -> str:
         return pick_daily([
             "Last night we slept under a big, round full moon shining down on the neighborhood.",
             "A huge, luminous full moon lit up the whole sky while we slept last night.",
-            "Last night we slept beneath a bright, round November moon.",
+            "Last night we slept beneath a bright, round moon.",
         ])
     elif phase < 0.72:
         return pick_daily([
@@ -149,7 +149,7 @@ def build_morning_script() -> str:
     hourly = resp.json()["hourly"]
 
     # With past_days=1: index 8 = yesterday 8 AM, index 32 = today 8 AM, index 39 = today 3 PM
-    temp_yest_am = hourly["temperature_2m"][8]
+    feels_yest_am = hourly["apparent_temperature"][8]
     cloud_yest_am = hourly["cloud_cover"][8]
 
     temp_am = hourly["temperature_2m"][32]
@@ -163,7 +163,6 @@ def build_morning_script() -> str:
 
     # 1. Sky description with streak/contrast awareness
     was_cloudy_yest = cloud_yest_am >= 65
-    is_clear_today = cloud_am < 35
 
     if code_am in [51, 53, 55, 61, 63, 65, 80, 81, 82]:
         sky_desc = pick_daily(["under rainy skies", "with steady autumn rain falling"])
@@ -191,19 +190,23 @@ def build_morning_script() -> str:
                 "with golden morning sunshine pouring down the avenue",
             ])
 
-    # 2. Temperature feel + yesterday delta
-    temp_diff = temp_am - temp_yest_am
-    if temp_diff <= -7:
-        delta_note = "—much colder than yesterday"
-    elif temp_diff >= 7:
-        delta_note = "—noticeably warmer than yesterday"
+    # 2. Always-on yesterday comparison (using apparent temperature so wind chill counts)
+    feels_diff = feels_am - feels_yest_am
+    if feels_diff <= -7:
+        delta_note = ", and it feels a lot colder than yesterday"
+    elif feels_diff <= -3:
+        delta_note = ", and it feels a little cooler than yesterday"
+    elif feels_diff >= 7:
+        delta_note = ", and it feels noticeably warmer than yesterday"
+    elif feels_diff >= 3:
+        delta_note = ", and it feels a little warmer than yesterday"
     else:
-        delta_note = ""
+        delta_note = ", feeling right around the same as yesterday"
 
     is_wet = rain_prob_max >= 45 or code_am in [51, 53, 55, 61, 63, 65, 80, 81, 82]
     is_very_cold = feels_am < 34
 
-    # Rotating play-space phrasing so it doesn't sound like a checklist
+    # Rotating play-space phrasing
     play_spaces = pick_daily([
         "playing in the side yard, the backyard, or at the playground",
         "outdoor play in the side yard, the backyard, or the playground",
@@ -211,22 +214,22 @@ def build_morning_script() -> str:
     ], day_offset=2)
 
     if is_very_cold:
-        feel_desc = f"a deep, frosty chill{delta_note}"
+        feel_desc = f"a deep, frosty chill {sky_desc}{delta_note}"
         gear_line = (
             f"Bundle up in your warm wool layers, heavy winter coat, hat, and gloves for {play_spaces}."
         )
     elif feels_am < 48:
-        feel_desc = f"a crisp chill{delta_note}"
+        feel_desc = f"a crisp chill {sky_desc}{delta_note}"
         gear_line = (
             f"Wear warm layers, a cozy sweater, and a jacket with your hat and gloves for {play_spaces}."
         )
     elif feels_am < 62:
-        feel_desc = f"a cool, fresh breeze{delta_note}"
+        feel_desc = f"a cool, fresh breeze {sky_desc}{delta_note}"
         gear_line = (
             f"Wear comfortable layers and a sweater or light jacket for {play_spaces}."
         )
     else:
-        feel_desc = f"mild, comfortable air{delta_note}"
+        feel_desc = f"mild, comfortable air {sky_desc}{delta_note}"
         gear_line = (
             f"Light layers are plenty today for {play_spaces}."
         )
@@ -249,22 +252,29 @@ def build_morning_script() -> str:
             "The air will feel much the same at pickup, so you'll want those same layers for the ride back on Little Red.",
         ])
 
-    # 4. Opening greeting rotation
+    # 4. Opening greeting & warm sign-off rotation
     greeting = pick_daily([
         "Good morning!",
         "Rise and shine!",
         "Good morning, everyone!",
     ])
 
+    signoff = pick_daily([
+        "Have a wonderful ride on Little Red, and I'll check the sky again tomorrow!",
+        "Enjoy your day outside, and have a great ride to school!",
+        "Have a lovely day playing outside—see you tomorrow morning!",
+    ], day_offset=3)
+
     moon_line = get_last_nights_moon()
     nature_line = get_celestial_or_nature_note(code_am, wind_am, feels_am, datetime.now())
 
     return (
         f"{greeting} {moon_line} "
-        f"Riding to school on Little Red this morning, you'll find {feel_desc} {sky_desc}. "
+        f"Riding to school on Little Red this morning, you'll find {feel_desc}. "
         f"{gear_line} "
         f"{pickup_line} "
-        f"{nature_line}"
+        f"{nature_line} "
+        f"{signoff}"
     )
 
 
