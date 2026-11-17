@@ -20,7 +20,7 @@ def pick_daily(options: list[str], day_offset: int = 0) -> str:
 
 
 def get_last_nights_moon() -> str:
-    """Calculates yesterday's lunar phase and rotates phrasing daily."""
+    """Calculates yesterday's lunar phase and rotates Glaswegian-tinged phrasing daily."""
     yesterday = datetime.now() - timedelta(days=1)
     known_new_moon = datetime(2000, 1, 6, 18, 14)
     lunar_cycle = 29.53058867
@@ -30,19 +30,19 @@ def get_last_nights_moon() -> str:
     if phase < 0.03 or phase > 0.97:
         return pick_daily([
             "Last night the sky was dark and cozy under a brand-new moon.",
-            "While we slept last night, a dark new moon tucked quietly into the stars.",
-            "Last night was a dark new-moon night, with the stars shining extra bright.",
+            "While you weans slept last night, a dark new moon tucked quietly into the stars.",
+            "Last night was a dark new-moon night, with the stars shining extra bright over the rooftops.",
         ])
     elif phase < 0.22:
         return pick_daily([
-            "Last night we slept under a thin silver crescent moon.",
-            "A slender crescent moon hung like a silver fingernail over the rooftops last night.",
+            "Last night we slept under a thin wee silver crescent moon.",
+            "A slender crescent moon hung like a silver fingernail over the brownstones last night.",
             "Last night we slept beneath a quiet, curving crescent moon.",
         ])
     elif phase < 0.28:
         return pick_daily([
             "Last night we slept under a bright half moon glowing over the neighborhood.",
-            "A crisp half moon shone down on the brownstones while we slept last night.",
+            "A crisp half moon shone down on the block while you wee ones slept last night.",
             "Last night we slept beneath a steady half moon high in the dark sky.",
         ])
     elif phase < 0.47:
@@ -55,7 +55,7 @@ def get_last_nights_moon() -> str:
         return pick_daily([
             "Last night we slept under a big, round full moon shining down on the neighborhood.",
             "A huge, luminous full moon lit up the whole sky while we slept last night.",
-            "Last night we slept beneath a bright, round moon.",
+            "Last night we slept beneath a bonnie, bright full moon.",
         ])
     elif phase < 0.72:
         return pick_daily([
@@ -71,59 +71,65 @@ def get_last_nights_moon() -> str:
         ])
     else:
         return pick_daily([
-            "Last night we slept under a delicate crescent moon before sunrise.",
+            "Last night we slept under a delicate wee crescent moon before sunrise.",
             "A thin, sleepy crescent moon curved low in the sky before dawn today.",
             "Last night we slept beneath a quiet old crescent moon.",
         ])
 
 
 def get_celestial_or_nature_note(weather_code: int, wind_speed: float, temp_morning: float, today: datetime) -> str:
-    """Checks celestial dates first, then rotates rich seasonal nature observations."""
+    """Checks celestial dates first, then rotates seasonal nature observations with Glaswegian warmth."""
     m, d = today.month, today.day
 
     if (m, d) in [(3, 20), (3, 21)]:
         return "Today is the Spring Equinox, when daytime and nighttime are the exact same length."
     if (m, d) in [(6, 20), (6, 21)]:
-        return "Today is the Summer Solstice, the longest, sunniest day of the whole year."
+        return "Today is the Summer Solstice—the sun's splittin' the trees on the longest, sunniest day of the whole year."
     if (m, d) in [(9, 22), (9, 23)]:
         return "Today is the Autumn Equinox, when day and night share the sky equally."
     if (m, d) in [(12, 21), (12, 22)]:
         return "Today is the Winter Solstice, the shortest day of the year, when the light begins its slow return."
 
-    # Wet / rainy weather pool
-    if weather_code in [51, 53, 55, 61, 63, 65, 80, 81, 82]:
+    # Heavy rain
+    if weather_code in [63, 65, 81, 82]:
         return pick_daily([
-            "Watch the damp sidewalks closely today for earthworms wiggling up into the cool air.",
+            "Aye, the rain is God's way o' cleanin' the coos—and it brings the earthworms wiggling right up onto the damp sidewalks.",
             "Listen for blue jays calling loudly from the wet oak branches while puddles gather along the curb.",
-            "On damp days like today, dark tree bark turns almost black and moss on the stoops wakes up bright green.",
         ], day_offset=1)
 
-    # Windy conditions pool
+    # Light drizzle / smirr
+    if weather_code in [51, 53, 55, 61, 80]:
+        return pick_daily([
+            "Watch the damp sidewalks closely today for wee earthworms wiggling up into the cool air.",
+            "On dreich, misty days like today, dark tree bark turns almost black and moss on the stoops wakes up bright green.",
+        ], day_offset=1)
+
+    # Blowin' a hoolie (windy)
     if wind_speed >= 15:
         if m in [10, 11]:
             return pick_daily([
                 "Watch how the gusts send golden ginkgo leaves spinning like little fans across the street.",
-                "Listen to the wind rattling the dry oak leaves that still cling stubbornly to the high branches.",
-                "Neighborhood squirrels are busy braving the breeze to tuck the last acorns under the tree roots.",
+                "Listen to the wind rattling the dry oak leaves still clinging stubbornly to the high branches.",
+                "Neighborhood squirrels are braving the breeze today to tuck their last acorns under the tree roots.",
             ], day_offset=2)
         return pick_daily([
-            "Listen to the wind rushing through the high branches, where pigeons and sparrows are tucking out of the breeze.",
+            "Listen to the wind rushing through the high branches, where my pigeon pals and the sparrows are tucking out of the breeze.",
             "Watch how the wind sends dry leaves dancing down the block ahead of Little Red.",
         ], day_offset=2)
 
-    # Deep cold / winter pool
+    # Pure Baltic / deep cold
     if temp_morning < 36:
         return pick_daily([
-            "Down beneath the fallen leaves and soil today, beetles, ladybugs, and garden spiders are tucked deep underground sleeping through the cold.",
+            "Down beneath the fallen leaves and soil today, wee beetles, ladybugs, and garden spiders are tucked deep underground sleeping through the cold.",
             "Look closely at shaded grass or car roofs this morning to see tiny crystals of white frost sparkling.",
-            "The neighborhood birds fluff their feathers up round and puffy on cold mornings like this to trap warm air.",
+            "The neighborhood birds fluff their feathers up round and puffy on Baltic mornings like this to trap warm air.",
         ], day_offset=3)
 
-    # Autumn migration / crisp weather pool (October - November)
+    # Autumn migration / crisp weather (October - November)
     if m in [10, 11]:
         return pick_daily([
             "Keep your ears open along the trees today for noisy flocks of glossy black grackles gathering for their autumn journey south.",
-            "Look up into the high blue sky—you might spot a long V of migrating Canada geese honking as they fly south.",
+            "Look up into the sky—you might spot a long V of migrating Canada geese honking as they fly south.",
             "Listen to the dry oak and sycamore leaves crunching underfoot around the yard and playground today.",
             "Watch the neighborhood squirrels with their bushy tails—they are burying acorns everywhere before the ground freezes.",
         ], day_offset=4)
@@ -132,7 +138,7 @@ def get_celestial_or_nature_note(weather_code: int, wind_speed: float, temp_morn
     return pick_daily([
         "Look up into the trees on your way today—the neighborhood chickadees and mourning doves are busy flitting between the branches.",
         "Keep an eye on sunny brick walls and stoops today, where neighborhood cats love to curl up in warm patches of light.",
-        "Listen closely above the street sounds for sparrows chirping together in the hedges.",
+        "Listen closely above the street sounds for wee sparrows chirping together in the hedges.",
     ], day_offset=5)
 
 
@@ -172,52 +178,70 @@ def build_morning_script() -> str:
     temp_pm = hourly["temperature_2m"][39]
     rain_prob_max = max(hourly["precipitation_probability"][32:41])
 
-    # 1. Sky description with streak/contrast awareness
+    # 1. Sky & precipitation description with Glaswegian weather words
     was_cloudy_yest = cloud_yest_am >= 65
+    is_heavy_rain = code_am in [63, 65, 81, 82]
+    is_light_rain = code_am in [51, 53, 55, 61, 80]
+    is_wet = is_heavy_rain or is_light_rain or rain_prob_max >= 45
 
-    if code_am in [51, 53, 55, 61, 63, 65, 80, 81, 82]:
-        sky_desc = pick_daily(["under rainy skies", "with steady autumn rain falling"])
+    if is_heavy_rain:
+        sky_desc = pick_daily([
+            "where it is properly chucking it doon from the sky",
+            "with rain stoatin' right off the pavement",
+        ])
+    elif is_light_rain:
+        sky_desc = pick_daily([
+            "with a fine, misty smirr hanging in the air",
+            "on a right dreich, drizzly morning",
+        ])
     elif code_am in [71, 73, 75, 77, 85, 86]:
-        sky_desc = "with snow flurries in the air"
+        sky_desc = "with wee snow flurries swirling in the air"
     elif cloud_am >= 75:
         sky_desc = pick_daily([
-            "under a cozy blanket of gray clouds",
-            "beneath soft, overcast skies",
+            "on a bit of a dreich, gray morning",
+            "beneath a cozy blanket of gray clouds",
             "under a high ceiling of autumn clouds",
         ])
     elif cloud_am >= 35:
         sky_desc = pick_daily([
-            "under partly sunny skies",
+            "under partly sunny skies—nae bad the day!",
             "with patches of blue sky peeking through the clouds",
             "under a mix of morning sun and drifting clouds",
         ])
     else:
-        if was_cloudy_yest:
-            sky_desc = "under bright, clear sunshine after yesterday's clouds"
+        if temp_am >= 85 or temp_pm >= 85:
+            sky_desc = "where the sun's splittin' the trees—aye, it's official taps aff weather!"
+        elif temp_am >= 62:
+            sky_desc = pick_daily([
+                "and aye, it's a proper stunner out there today!",
+                "under wide-open, sunny skies—nae bad the day at all!",
+            ])
+        elif was_cloudy_yest:
+            sky_desc = "under bright, clear sunshine after yesterday's dreich clouds"
         else:
             sky_desc = pick_daily([
-                "under wide-open, sunny skies",
+                "under wide-open, sunny skies—nae bad the day!",
                 "under another bright, crystal-clear sky",
                 "with golden morning sunshine pouring down the avenue",
             ])
 
-    # 2. Always-on yesterday comparison (using apparent temperature so wind chill counts)
+    # 2. Always-on yesterday comparison
     feels_diff = feels_am - feels_yest_am
     if feels_diff <= -7:
-        delta_note = ", and it feels a lot colder than yesterday"
+        delta_note = ", and it feels a whole lot colder than yesterday"
     elif feels_diff <= -3:
-        delta_note = ", and it feels a little cooler than yesterday"
+        delta_note = ", and it feels a wee bit cooler than yesterday"
     elif feels_diff >= 7:
         delta_note = ", and it feels noticeably warmer than yesterday"
     elif feels_diff >= 3:
-        delta_note = ", and it feels a little warmer than yesterday"
+        delta_note = ", and it feels a wee bit warmer than yesterday"
     else:
         delta_note = ", feeling right around the same as yesterday"
 
-    is_wet = rain_prob_max >= 45 or code_am in [51, 53, 55, 61, 63, 65, 80, 81, 82]
+    # 3. Temperature feel + wind + clothing rules
     is_very_cold = feels_am < 34
+    is_windy = wind_am >= 15
 
-    # Rotating play-space phrasing
     play_spaces = pick_daily([
         "playing in the side yard, the backyard, or at the playground",
         "outdoor play in the side yard, the backyard, or the playground",
@@ -225,30 +249,45 @@ def build_morning_script() -> str:
     ], day_offset=2)
 
     if is_very_cold:
-        feel_desc = f"a deep, frosty chill {sky_desc}{delta_note}"
+        feel_phrase = "pure Baltic air—a bitter, snell chill" if is_windy else "pure Baltic, frosty air"
         gear_line = (
-            f"Bundle up in your warm wool layers, heavy winter coat, hat, and gloves for {play_spaces}."
+            f"Bundle up in your warm wool layers, heavy winter coat, hat, and gloves "
+            f"so you aren't chitterin' while {play_spaces}."
         )
     elif feels_am < 48:
-        feel_desc = f"a crisp chill {sky_desc}{delta_note}"
+        feel_phrase = "a right nippy wind oot there" if is_windy else "a crisp, nippy chill"
         gear_line = (
             f"Wear warm layers, a cozy sweater, and a jacket with your hat and gloves for {play_spaces}."
         )
     elif feels_am < 62:
-        feel_desc = f"a cool, fresh breeze {sky_desc}{delta_note}"
+        feel_phrase = "a blustery breeze blowin' a hoolie" if is_windy else "a cool, fresh breeze"
         gear_line = (
             f"Wear comfortable layers and a sweater or light jacket for {play_spaces}."
         )
+    elif feels_am >= 85:
+        feel_phrase = "blazing warm summer heat"
+        gear_line = (
+            f"Light, breathable clothes and plenty of water are the order of the day for {play_spaces}."
+        )
     else:
-        feel_desc = f"mild, comfortable air {sky_desc}{delta_note}"
+        feel_phrase = "mild, bonnie air"
         gear_line = (
             f"Light layers are plenty today for {play_spaces}."
         )
 
-    if is_wet:
-        gear_line += " Wet weather is in the mix today, so wear your raincoat and boots, and remember to bring your rain pants in your bag."
+    if is_windy and not is_very_cold and feels_am >= 48:
+        gear_line += " Keep your hood or hat handy too, because it's blowin' a hoolie down the avenue."
 
-    # 3. Pickup transition on Little Red
+    if is_wet:
+        gear_line += (
+            " Wet weather is in the mix today, so pull on your raincoat and boots, "
+            "and gie your bag your rain pants so you don't end up pure drookit!"
+        )
+
+    if is_wet or is_very_cold:
+        gear_line += " Remember—there's no such thing as bad weather, just the wrong clothes!"
+
+    # 4. Pickup transition on Little Red
     temp_swing = temp_pm - temp_am
     if temp_swing >= 11 and not is_very_cold:
         pickup_line = pick_daily([
@@ -263,17 +302,17 @@ def build_morning_script() -> str:
             "The air will feel much the same at pickup, so you'll want those same layers for the ride back on Little Red.",
         ])
 
-    # 4. Opening greeting & warm sign-off rotation
+    # 5. Glaswegian opening greeting & warm sign-off rotation
     greeting = pick_daily([
-        "Good morning!",
-        "Rise and shine!",
-        "Good morning, everyone!",
+        "Good morning, weans! It's Mr. Weatherpigeons tapping on your windowpane.",
+        "Rise and shine, wee ones! Mr. Weatherpigeons here, reporting from the windowsill.",
+        "Good morning, everyone! Aye, it's your pal Mr. Weatherpigeons checking in from the ledge.",
     ])
 
     signoff = pick_daily([
-        "Have a wonderful ride on Little Red, and I'll check the sky again tomorrow!",
-        "Enjoy your day outside, and have a great ride to school!",
-        "Have a lovely day playing outside—see you tomorrow morning!",
+        "Have a grand ride on Little Red, and Mr. Weatherpigeons will check the sky again tomorrow. Cheerio!",
+        "Enjoy your wee adventures outside today, and have a brilliant ride to school! Cheerio!",
+        "Have a lovely day playing outside—Mr. Weatherpigeons will see you tomorrow morning!",
     ], day_offset=3)
 
     moon_line = get_last_nights_moon()
@@ -281,7 +320,7 @@ def build_morning_script() -> str:
 
     return (
         f"{greeting} {moon_line} "
-        f"Riding to school on Little Red this morning, you'll find {feel_desc}. "
+        f"Riding to school on Little Red this morning, you'll find {feel_phrase} {sky_desc}{delta_note}. "
         f"{gear_line} "
         f"{pickup_line} "
         f"{nature_line} "
@@ -299,7 +338,7 @@ def generate_audio(text: str) -> None:
         "text": text,
         "model_id": "eleven_multilingual_v2",
         "voice_settings": {
-            "stability": 0.65,
+            "stability": 0.72,
             "similarity_boost": 0.75,
         },
     }
