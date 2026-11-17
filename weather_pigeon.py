@@ -1,4 +1,5 @@
 import os
+import time
 from datetime import datetime, timedelta
 import requests
 
@@ -144,8 +145,17 @@ def build_morning_script() -> str:
         f"&temperature_unit=fahrenheit&wind_speed_unit=mph"
         f"&timezone={TIMEZONE}&past_days=1&forecast_days=1"
     )
-    resp = requests.get(url, timeout=10)
-    resp.raise_for_status()
+resp = None
+    for attempt in range(3):
+        try:
+            resp = requests.get(url, timeout=30)
+            resp.raise_for_status()
+            break
+        except requests.exceptions.RequestException:
+            if attempt == 2:
+                raise
+            print(f"Weather API slow (attempt {attempt + 1}/3), retrying in 5 seconds...")
+            time.sleep(5)
     hourly = resp.json()["hourly"]
 
     # With past_days=1: index 8 = yesterday 8 AM, index 32 = today 8 AM, index 39 = today 3 PM
