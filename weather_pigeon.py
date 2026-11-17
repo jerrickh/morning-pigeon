@@ -137,7 +137,6 @@ def get_celestial_or_nature_note(weather_code: int, wind_speed: float, temp_morn
 
 
 def build_morning_script() -> str:
-    # past_days=1 lets us compare today's morning against yesterday's morning
     url = (
         f"https://api.open-meteo.com/v1/forecast"
         f"?latitude={LAT}&longitude={LON}"
@@ -145,7 +144,8 @@ def build_morning_script() -> str:
         f"&temperature_unit=fahrenheit&wind_speed_unit=mph"
         f"&timezone={TIMEZONE}&past_days=1&forecast_days=1"
     )
-resp = None
+
+    resp = None
     for attempt in range(3):
         try:
             resp = requests.get(url, timeout=30)
@@ -156,6 +156,7 @@ resp = None
                 raise
             print(f"Weather API slow (attempt {attempt + 1}/3), retrying in 5 seconds...")
             time.sleep(5)
+
     hourly = resp.json()["hourly"]
 
     # With past_days=1: index 8 = yesterday 8 AM, index 32 = today 8 AM, index 39 = today 3 PM
