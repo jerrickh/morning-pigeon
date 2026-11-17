@@ -1,0 +1,37 @@
+name: Daily Morning Weather Pigeon
+
+on:
+  schedule:
+    # Runs at 11:00 UTC (6:00 AM EST / 7:00 AM EDT) every day
+    - cron: "0 11 * * *"
+  workflow_dispatch: # Lets you click "Run workflow" manually anytime to test
+
+permissions:
+  contents: write
+
+jobs:
+  build-audio:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Generate today's weather audio
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: python weather_pigeon.py
+
+      - name: Commit updated MP3 to repo
+        run: |
+          git config user.name "Morning Pigeon"
+          git config user.email "pigeon@users.noreply.github.com"
+          git add today-weather.mp3
+          git commit -m "Update daily morning forecast" || exit 0
+          git push
